@@ -1,0 +1,70 @@
+
+const Rooms = require('../models/Rooms');
+const Questions = require('../models/Questions');
+const roomController = {
+    createRoom : async(request,response) =>{
+        try {
+            const {createdBy} = request.body;
+            const Code = Math.random().toString(36).substring(2,8).toUpperCase();
+            // we are making use of 26aphas + 10Numbers, then we takeout substring
+            // now we have data we acan create room
+
+            const room = await Rooms.create({
+                roomCode:Code,
+                createdBy:createdBy
+            });
+            response.json(room);
+        } catch (error) {
+            console.log(error);
+            response.status(500).json({message:" Internal server error"});
+        }
+    },
+
+    getByRoomId : async(request,response) =>{
+        try {
+            const roomId = request.params.code;
+            const room = await Rooms.findOne({roomCode: roomId});
+
+            if(!room){
+                return response.status(404).json({message:"Room not found"});
+            }
+            response.json(room);
+            
+        } catch (error) {
+            console.log(error);
+            response.status(500).json({message:" Internal server error"});
+        }
+    },
+
+    createQuestion: async(request, response)=>{
+        try {
+            const {content, user} = request.body;
+            const roomCode = request.params.code;
+
+            const question = await Questions.create({
+                roomCode:roomCode,
+                content:content,
+                user:user,
+            });
+            response.json(question);
+        } catch (error) {
+            console.log(error);
+            response.status(500).json({message:" Internal server error"});
+        }
+    },
+
+    getQuestions: async(request, response)=>{
+        try {
+            // will et all questions
+            const code = request.params.code; //roomcode
+            const questions = await Questions.find({roomCode: code}).sort({createdAt: -1}); // so that newly created question comest at top
+
+            response.json(questions);
+        } catch (error) {
+            console.log(error);
+            response.status(500).json({message:" Internal server error"});
+        }
+    }
+}
+
+module.exports = roomController;
