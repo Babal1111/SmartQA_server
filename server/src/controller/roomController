@@ -17,7 +17,7 @@ const roomController = {
         } catch (error) {
             console.log(error);
             response.status(500).json({message:" Internal server error"});
-        }
+        } 
     },
 
     getByRoomId : async(request,response) =>{
@@ -46,6 +46,10 @@ const roomController = {
                 content:content,
                 user:user,
             });
+
+            const io = request.app.get("io"); // now you have access to io, the Socket.IO server, inside this controller
+            io.to(roomCode).emit("new-question",question);// will emit on new question, to show to every one
+
             response.json(question);
         } catch (error) {
             console.log(error);
