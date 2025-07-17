@@ -1,3 +1,4 @@
+const  {callGemini} = require('../services/geminiService');
 
 const Rooms = require('../models/Rooms');
 const Questions = require('../models/Questions');
@@ -64,6 +65,20 @@ const roomController = {
             const questions = await Questions.find({roomCode: code}).sort({createdAt: -1}); // so that newly created question comest at top
 
             response.json(questions);
+        } catch (error) {
+            console.log(error);
+            response.status(500).json({message:" Internal server error"});
+        }
+    },
+    summarizeQuestions: async(request,response)=>{
+        try {
+            const {code} = request.params; 
+            const questions = await Questions.find({roomCode: code});
+            if(questions.length === 0) return response.json([]);
+
+            const summary = await callGemini(questions);
+            response.json(summary);
+            
         } catch (error) {
             console.log(error);
             response.status(500).json({message:" Internal server error"});
