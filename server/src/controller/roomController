@@ -5,14 +5,15 @@ const Questions = require('../models/Questions');
 const roomController = {
     createRoom : async(request,response) =>{
         try {
-            const {createdBy} = request.body;
+            const {createdBy, keywords} = request.body;
             const Code = Math.random().toString(36).substring(2,8).toUpperCase();
             // we are making use of 26aphas + 10Numbers, then we takeout substring
             // now we have data we acan create room
 
             const room = await Rooms.create({
                 roomCode:Code,
-                createdBy:createdBy
+                createdBy:createdBy,
+                keywords:keywords
             });
             response.json(room);
         } catch (error) {
@@ -76,7 +77,7 @@ const roomController = {
             const questions = await Questions.find({roomCode: code});
             if(questions.length === 0) return response.json([]);
 
-            const summary = await callGemini(questions);
+            const summary = await callGemini(questions,code);
             response.json(summary);
             
         } catch (error) {

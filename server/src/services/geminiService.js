@@ -1,13 +1,23 @@
 // when ever u intigrate 3rd party services, try to make a new folder SERVICES
 
 const axios = require('axios');
+const Rooms = require('../models/Rooms');
 require('dotenv').config();
-const callGemini = async(quesions)=>{
+const callGemini = async(quesions,code)=>{
+
+   const room = await Rooms.findOne({ roomCode: code });
+
+  if (room) {
+  const keywords = room.keywords;
+  console.log("Keywords:", keywords);
+  } else {
+  console.log("Room not found");
+  }
     const prompt = `
-    Given following list of questions from an audience, group them if they are similar, and return a sorted list with most frequently asked of relevant qustions summarized:
+    Given following list of questions from an audience, and the keyword by the host, keywords : ${keywords} group them if they are similar and in someway connected to keywords, and return a sorted list with most frequently asked of relevant qustions summarized:
     ${quesions.map(
         (ques,index)=>`${index+1}.${ques.content}`
-    ).join("/n") //join them with new line char,ie new line
+    ).join("\n") //join them with new line char,ie new line
     }
     Respond with only the summarized list, one per line
     `;

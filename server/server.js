@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const roomRoutes = require('./src/routes/roomRoutes');
 const http = require('http');
 const {Server} = require('socket.io');
-
+const authRoutes = require('./src/routes/authRoutes');
 app.use(express.json());
 
 const CorsOptions= {
@@ -44,6 +44,7 @@ io.on("connection",(socket)=>{  // on connection event // and we recieve a socke
 
 app.set("io",io); // by thi our server will be able to send all the connected clients, the msg on every new question
 
+app.use('/auth',authRoutes);
 app.use('/room',roomRoutes);
 
 const port = process.env.PORT;
