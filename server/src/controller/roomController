@@ -13,7 +13,8 @@ const roomController = {
             const room = await Rooms.create({
                 roomCode:Code,
                 createdBy:createdBy,
-                keywords:keywords
+                keywords:keywords,
+                role:"admin"
             });
             response.json(room);
         } catch (error) {
@@ -47,6 +48,7 @@ const roomController = {
                 roomCode:roomCode,
                 content:content,
                 user:user,
+                role:"user"
             });
 
             const io = request.app.get("io"); // now you have access to io, the Socket.IO server, inside this controller
